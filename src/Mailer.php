@@ -1,6 +1,6 @@
 <?php
 
-namespace DPS;
+namespace Dps;
 
 use Exception;
 use \Mailjet\Resources;
