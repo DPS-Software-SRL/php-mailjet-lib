@@ -1,0 +1,11 @@
+{
+    "name": "dps/mailjet",
+    "autoload": {
+        "psr-4": {
+            "Dps\\Mailjet\\": "src/"
+        }
+    },
+    "require": {
+        "mailjet/mailjet-apiv3-php": "^1.6"
+    }
+}
