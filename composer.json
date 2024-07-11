@@ -2,7 +2,7 @@
     "name": "dps-software-srl/php-mailjet-lib",
     "autoload": {
         "psr-4": {
-            "Dps\\Mailjet\\": "src/"
+            "Dps\\Mailer\\": "src/"
         }
     },
     "require": {

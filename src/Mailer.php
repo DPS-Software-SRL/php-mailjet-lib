@@ -16,7 +16,7 @@ use \Mailjet\Client;
  * @requires $_ENV['MJ_APIKEY_PRIVATE']
  * @requires $_ENV['SEND_EMAILS'] // [ 'true' | 'false' ]
  */
-final class mailer
+final class Mailer
 {
     private static $attachments = [];
     private static $body;
