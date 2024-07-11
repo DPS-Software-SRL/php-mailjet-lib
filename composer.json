@@ -1,5 +1,5 @@
 {
-    "name": "dps/mailjet",
+    "name": "dps/php-mailjet-lib",
     "autoload": {
         "psr-4": {
             "Dps\\Mailjet\\": "src/"
