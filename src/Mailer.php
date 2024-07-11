@@ -158,8 +158,6 @@ final class Mailer
             return self::respuestaFalsa( 'Envío de emails desactivado' );
         }
 
-        $to = 'pitoti@gmail.com';
-      
         try {
             self::setDestinatarios( $to );
         
