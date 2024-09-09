@@ -81,14 +81,22 @@ final class Mailer
     /**
      * Lee el archivo indicado para usarlo en las funciones de adjuntos
      * 
-     * @param string $path
+     * @param string $path Path al adjunto
+     * @param string $name Nombre del archivo como se verá en el correo (opcional)
      * @return array
      */
-    static private function readFile( string $path ) {
+    static private function readFile( string $path, string $name = '' ) {
         $file   = file_get_contents( $path );
         $base64 = base64_encode( $file );
-        $mime   = mime_content_type( $path );
-        $name   = basename( $path );
+
+        $finfo  = finfo_open(FILEINFO_MIME_TYPE);
+        $mime   = finfo_file($finfo, $path);
+        finfo_close($finfo);
+
+        if( $name == '' ) {
+            $name = basename( $path );
+        }
+
         return [ 
             'Content'      => $base64,
             'Content-type' => $mime,
@@ -103,8 +111,8 @@ final class Mailer
      * @param string $path The path to the file.
      * @return self The current class instance.
      */
-    static public function addAttachment( string $path ) {
-        self::$attachments[] = self::readFile( $path );
+    static public function addAttachment( string $path, string $name = '' ) {
+        self::$attachments[] = self::readFile( $path, $name );
         return new self();
     }
 
