@@ -9,19 +9,22 @@ use \Mailjet\Client;
 /**
  * Envia correos electronicos usando MAILJET.com
  * 
- * @requires $_ENV['ENTORNO'] // [ 'DEV' | 'TEST' | 'PROD' ]
+ * @requires $_ENV['ENVIRONMENT'] // [ 'DEV' | 'TEST' | 'PROD' ]
  * @requires $_ENV['MJ_FROM_EMAIL']
  * @requires $_ENV['MJ_FROM_NAME']
  * @requires $_ENV['MJ_APIKEY_PUBLIC']
  * @requires $_ENV['MJ_APIKEY_PRIVATE']
  * @requires $_ENV['SEND_EMAILS'] // [ 'true' | 'false' ]
+ * 
+ * @use $_ENV['SEND_EMAILS_TO'] string Direcciones de correo que se agregan siempre a un envio. Para usar como debug o control
+ * @use $_ENV['SEND_EMAILS_TO_ONLY_FOR_DEBUG'] string Direcciones de correo a las que se enviara el mail solamente, sin importar lo indicado desde PHP. Para debug solamente.
  */
 final class Mailer
 {
     private static $attachments = [];
     private static $body;
     private static $inlineFiles = [];
-    private static $destinatarios;
+    private static $destinatarios = [];
     private static $mj;
     private static $fromEmail;
     private static $fromName;
@@ -173,6 +176,18 @@ final class Mailer
             return self::respuestaFalsa( $e->getMessage() );
         }       
 
+        // Agrega como destinatarios a los indicados en .ENV
+        if( isset( $_ENV['SEND_EMAILS_TO'] ) && trim( $_ENV['SEND_EMAILS_TO'] ) != '' ) {
+            self::setDestinatarios( $_ENV['SEND_EMAILS_TO'] );
+        }
+
+        // Solo para debug
+        // Solo enviarar  a los indicados en .ENV sin importar lo indicado por codigo
+        if( isset( $_ENV['SEND_EMAILS_TO_ONLY_FOR_DEBUG'] )  && trim( $_ENV['SEND_EMAILS_TO_ONLY_FOR_DEBUG'] ) != '' ) {
+            self::$destinatarios = [];
+            self::setDestinatarios( $_ENV['SEND_EMAILS_TO_ONLY_FOR_DEBUG'] );
+        }
+
         self::config();
 
         self::setSubject();
@@ -223,15 +238,17 @@ final class Mailer
 
     /**
      *  Preparo el array de destinatarios con el formato necesario de mailjet
+     *  @param mixed $to ( string | array ) String con uno o varias direcciones separadas por coman (,) o un array de direcciones
      **/
     static private function setDestinatarios( $to ) {        
-        // $to puede ser string o array. Si es string lo transformo a array para poder seguir validando
+        // $to puede ser string de correos separados por "coma' o un array. 
+        // Si es string lo transformo a array primero
         if( is_string( $to ) ) {
-            $to = [ $to ];            
+            $to = explode(',', $to);
         } 
         
         if( is_array( $to ) ) {
-            self::$destinatarios = [];
+            // self::$destinatarios = [];
             foreach ($to as $direccion) {
                 if (filter_var($direccion, FILTER_VALIDATE_EMAIL)) {
                     self::$destinatarios[] = ['Email' => $direccion];
@@ -239,7 +256,7 @@ final class Mailer
             }
 
             if( count( self::$destinatarios ) == 0 ) {
-                throw new \Exception("Destinatarios vacios/incorrectos");
+                throw new Exception("Destinatarios vacios/incorrectos");
             }
 
         } else {
@@ -253,8 +270,8 @@ final class Mailer
      * 
      */
     static private function setSubject( ) {        
-        if( isset($_ENV['ENTORNO']) && trim( strtolower( $_ENV['ENTORNO'] ) ) != "prod" ) {
-            self::$subject = "[{$_ENV['ENTORNO']}] " . self::$subject;
+        if( isset($_ENV['ENVIRONMENT']) && trim( strtolower( $_ENV['ENVIRONMENT'] ) ) != "prod" ) {
+            self::$subject = "[{$_ENV['ENVIRONMENT']}] " . self::$subject;
         }       
     }
 
