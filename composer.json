@@ -1,5 +1,6 @@
 {
     "name": "dps-software-srl/php-mailjet-lib",
+    "description": "Send mails from mailjet",
     "autoload": {
         "psr-4": {
             "Dps\\": "src/"
