@@ -206,8 +206,8 @@ final class Mailer
 
         $response = self::$mj->post(Resources::$Email, ['body' => $toSend]);
 
-        $this->clearAttachments();
-        $this->clearDestinatarios();
+        self::clearAttachments();
+        self::clearDestinatarios();
 
         $salida = [
             'success' => $response->success(),
