@@ -206,15 +206,16 @@ final class Mailer
 
         $response = self::$mj->post(Resources::$Email, ['body' => $toSend]);
 
+        $this->clearAttachments();
+        $this->clearDestinatarios();
+
         $salida = [
             'success' => $response->success(),
             'data'    => $response->getData(),
             'error'   => $response->getReasonPhrase()
         ];
-
-        return $salida;
-
-        
+         
+        return $salida;        
     }
 
 
@@ -289,7 +290,17 @@ final class Mailer
         return $response->getData();
     }
 
+    
+    static public function clearDestinatarios( ) {
+        self::$destinatarios = [];
+    }
 
+
+    static public function clearAttachments() {
+        self::$attachments = [];        
+    }
+
+    
     /**
      * Retrieve sending / size / spam information about a specific message ID.
      * @link https://dev.mailjet.com/email/reference/messages#v3_get_messageinformation_message_ID
